@@ -1,0 +1,226 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_USERS 100
+#define MAX_MOVIES 100
+#define MAX_CART_ITEMS 10
+
+typedef struct {
+    char name[50];
+    char email[50];
+    char password[20];
+} User;
+
+typedef struct {
+    char id[20];
+    char title[50];
+    float price;
+    char description[100];
+    char genre[30];
+} Movie;
+
+typedef struct {
+    char movieId[20];
+    int quantity;
+} CartItem;
+
+User users[MAX_USERS];
+int userCount = 0;
+
+Movie movies[MAX_MOVIES] = {
+    {"1", "Inception", 9.99, "Um thriller de ficção científica.", "Ficção"},
+    {"2", "Titanic", 14.99, "Um romance épico.", "Romance"},
+    {"3", "Avatar", 19.99, "Uma aventura de ficção científica.", "Ficção"},
+    {"4", "The Godfather", 12.99, "Um drama criminal.", "Crime"},
+    {"5", "The Dark Knight", 16.99, "Um filme de super-herói.", "Ação"},
+    {"6", "Forrest Gump", 11.99, "Uma história inspiradora.", "Drama"},
+    {"7", "The Matrix", 13.99, "Uma luta contra máquinas.", "Ficção"},
+    {"8", "Interstellar", 15.99, "Uma jornada através do espaço.", "Ficção"},
+    {"9", "Gladiator", 18.99, "Um guerreiro em busca de vingança.", "Ação"},
+    {"10", "The Shawshank Redemption", 10.99, "Uma história de esperança e liberdade.", "Drama"}
+};
+
+CartItem cart[MAX_CART_ITEMS];
+int cartItemCount = 0;
+
+void registerUser() {
+    User newUser;
+    printf("Digite seu nome: ");
+    scanf("%s", newUser.name);
+    printf("Digite seu email: ");
+    scanf("%s", newUser.email);
+    printf("Digite sua senha: ");
+    scanf("%s", newUser.password);
+
+    users[userCount++] = newUser;
+    printf("Usuário registrado com sucesso!\n");
+}
+
+User* loginUser() {
+    char email[50], password[20];
+    printf("Digite seu email: ");
+    scanf("%s", email);
+    printf("Digite sua senha: ");
+    scanf("%s", password);
+
+    for (int i = 0; i < userCount; i++) {
+        if (strcmp(users[i].email, email) == 0 && strcmp(users[i].password, password) == 0) {
+            printf("Login bem-sucedido! Olá, %s!\n", users[i].name);
+            return &users[i];
+        }
+    }
+
+    printf("Email ou senha incorretos.\n");
+    return NULL;
+}
+
+void printMovies() {
+    printf("Catálogo de Filmes:\n");
+    for (int i = 0; i < MAX_MOVIES; i++) {
+        if (strlen(movies[i].id) > 0) {
+            printf("[%s] %s: R$ %.2f - %s - Gênero: %s\n", movies[i].id, movies[i].title, movies[i].price, movies[i].description, movies[i].genre);
+        }
+    }
+}
+
+void addToCart(const char* movieId, int quantity) {
+    for (int i = 0; i < cartItemCount; i++) {
+        if (strcmp(cart[i].movieId, movieId) == 0) {
+            cart[i].quantity += quantity;
+            return;
+        }
+    }
+
+    strcpy(cart[cartItemCount].movieId, movieId);
+    cart[cartItemCount].quantity = quantity;
+    cartItemCount++;
+}
+
+void removeFromCart(const char* movieId, int quantity) {
+    for (int i = 0; i < cartItemCount; i++) {
+        if (strcmp(cart[i].movieId, movieId) == 0) {
+            cart[i].quantity -= quantity;
+            if (cart[i].quantity <= 0) {
+                cartItemCount--;
+                for (int j = i; j < cartItemCount; j++) {
+                    cart[j] = cart[j + 1];
+                }
+            }
+            return;
+        }
+    }
+}
+
+void showCart() {
+    if (cartItemCount == 0) {
+        printf("O carrinho está vazio.\n");
+        return;
+    }
+
+    float total = 0.0;
+    printf("Seu Carrinho:\n");
+    for (int i = 0; i < cartItemCount; i++) {
+        for (int j = 0; j < MAX_MOVIES; j++) {
+            if (strcmp(movies[j].id, cart[i].movieId) == 0) {
+                float price = movies[j].price * cart[i].quantity;
+                total += price;
+                printf("[%s] %s (%d dias): R$ %.2f\n", movies[j].id, movies[j].title, cart[i].quantity, price);
+                break;
+            }
+        }
+    }
+    printf("Preço Total: R$ %.2f\n", total);
+}
+
+void pay() {
+    if (cartItemCount == 0) {
+        printf("Não há nenhum produto em seu carrinho para ser pago.\n");
+        return;
+    }
+
+    showCart();
+    printf("Pagamento realizado com sucesso!\n");
+    cartItemCount = 0; // Limpa o carrinho
+}
+
+void menu() {
+    int choice;
+    User* loggedUser;
+
+    while (1) {
+        printf("\n1. Registrar\n");
+        printf("2. Login\n");
+        printf("3. Sair\n");
+        printf("Escolha uma opção: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                registerUser();
+                break;
+            case 2:
+                loggedUser = loginUser();
+                if (loggedUser != NULL) {
+                    while (1) {
+                        printf("\n1. Exibir Catálogo\n");
+                        printf("2. Adicionar ao Carrinho\n");
+                        printf("3. Remover do Carrinho\n");
+                        printf("4. Mostrar Carrinho\n");
+                        printf("5. Pagar\n");
+                        printf("6. Sair\n");
+                        printf("Escolha uma opção: ");
+                        scanf("%d", &choice);
+
+                        char movieId[20];
+                        int quantity;
+
+                        switch (choice) {
+                            case 1:
+                                printMovies();
+                                break;
+                            case 2:
+                                printMovies(); // Exibe catálogo antes de adicionar
+                                printf("Digite o ID do filme: ");
+                                scanf("%s", movieId);
+                                printf("Quantos dias você deseja alugar o filme? ");
+                                scanf("%d", &quantity);
+                                addToCart(movieId, quantity);
+                                printf("Filme adicionado ao carrinho para %d dias.\n", quantity);
+                                break;
+                            case 3:
+                                printf("Digite o ID do filme: ");
+                                scanf("%s", movieId);
+                                printf("Quantos dias você deseja remover? ");
+                                scanf("%d", &quantity);
+                                removeFromCart(movieId, quantity);
+                                printf("Filme removido do carrinho.\n");
+                                break;
+                            case 4:
+                                showCart();
+                                break;
+                            case 5:
+                                pay();
+                                break;
+                            case 6:
+                                printf("Até logo!\n");
+                                return;
+                            default:
+                                printf("Opção inválida.\n");
+                        }
+                    }
+                }
+                break;
+            case 3:
+                printf("Até logo!\n");
+                exit(0);
+            default:
+                printf("Opção inválida.\n");
+        }
+    }
+}
+
+int main() {
+    menu();
+    return 0;
+}
