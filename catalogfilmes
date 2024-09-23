@@ -45,9 +45,14 @@ CartItem cart[MAX_CART_ITEMS];
 int cartItemCount = 0;
 
 void registerUser() {
+    if (userCount >= MAX_USERS) {
+        printf("Limite máximo de usuários alcançado.\n");
+        return;
+    }
+
     User newUser;
     printf("Digite seu nome: ");
-    scanf("%s", newUser.name);
+    scanf(" %[^\n]s", newUser.name);
     printf("Digite seu email: ");
     scanf("%s", newUser.email);
     printf("Digite sua senha: ");
@@ -85,6 +90,11 @@ void printMovies() {
 }
 
 void addToCart(const char* movieId, int quantity) {
+    if (cartItemCount >= MAX_CART_ITEMS) {
+        printf("Limite máximo de itens no carrinho alcançado.\n");
+        return;
+    }
+
     for (int i = 0; i < cartItemCount; i++) {
         if (strcmp(cart[i].movieId, movieId) == 0) {
             cart[i].quantity += quantity;
@@ -141,7 +151,82 @@ void pay() {
 
     showCart();
     printf("Pagamento realizado com sucesso!\n");
-    cartItemCount = 0; // Limpa o carrinho
+    cartItemCount = 0; 
+}
+
+void adminMenu() {
+    const char adminUser[] = "ferrein1";
+    const char adminPass[] = "filmesbr34";
+    char inputUser[50], inputPass[20];
+    int choice;
+
+    printf("Digite o nome de usuário do administrador: ");
+    scanf("%s", inputUser);
+    printf("Digite a senha do administrador: ");
+    scanf("%s", inputPass);
+
+    if (strcmp(inputUser, adminUser) == 0 && strcmp(inputPass, adminPass) == 0) {
+        while (1) {
+            printf("\nMenu Administrador:\n");
+            printf("1. Adicionar Filme\n");
+            printf("2. Remover Filme\n");
+            printf("3. Sair\n");
+            printf("Escolha uma opção: ");
+            scanf("%d", &choice);
+
+            switch (choice) {
+                case 1: {
+                    Movie newMovie;
+                    printf("Digite o ID do filme: ");
+                    scanf("%s", newMovie.id);
+                    printf("Digite o título do filme: ");
+                    scanf(" %[^\n]s", newMovie.title);
+                    printf("Digite o preço do filme: ");
+                    scanf("%f", &newMovie.price);
+                    printf("Digite a descrição do filme: ");
+                    scanf(" %[^\n]s", newMovie.description);
+                    printf("Digite o gênero do filme: ");
+                    scanf("%s", newMovie.genre);
+
+                    if (userCount < MAX_MOVIES) { 
+                        movies[userCount++] = newMovie;
+                        printf("Filme adicionado com sucesso!\n");
+                    } else {
+                        printf("Limite máximo de filmes alcançado.\n");
+                    }
+                    break;
+                }
+                case 2: {
+                    char movieId[20];
+                    printf("Digite o ID do filme a ser removido: ");
+                    scanf("%s", movieId);
+
+                    int found = 0;
+                    for (int i = 0; i < userCount; i++) {
+                        if (strcmp(movies[i].id, movieId) == 0) {
+                            found = 1;
+                            for (int j = i; j < userCount - 1; j++) {
+                                movies[j] = movies[j + 1];
+                            }
+                            userCount--;
+                            printf("Filme removido com sucesso!\n");
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        printf("Filme não encontrado.\n");
+                    }
+                    break;
+                }
+                case 3:
+                    return;
+                default:
+                    printf("Opção inválida.\n");
+            }
+        }
+    } else {
+        printf("Credenciais inválidas.\n");
+    }
 }
 
 void menu() {
@@ -151,7 +236,8 @@ void menu() {
     while (1) {
         printf("\n1. Registrar\n");
         printf("2. Login\n");
-        printf("3. Sair\n");
+        printf("3. Acesso Administrador\n");
+        printf("4. Sair\n");
         printf("Escolha uma opção: ");
         scanf("%d", &choice);
 
@@ -180,7 +266,7 @@ void menu() {
                                 printMovies();
                                 break;
                             case 2:
-                                printMovies(); // Exibe catálogo antes de adicionar
+                                printMovies();
                                 printf("Digite o ID do filme: ");
                                 scanf("%s", movieId);
                                 printf("Quantos dias você deseja alugar o filme? ");
@@ -212,6 +298,9 @@ void menu() {
                 }
                 break;
             case 3:
+                adminMenu();
+                break;
+            case 4:
                 printf("Até logo!\n");
                 exit(0);
             default:
