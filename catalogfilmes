@@ -77,7 +77,7 @@ void registerUser() {
 	scanf("%s", newUser.password);
 
 	users[userCount++] = newUser;
-	printf("UsuC!rio registrado com sucesso!\n");
+	printf("Usuário registrado com sucesso!\n");
 }
 
 User* loginUser() {
@@ -99,15 +99,15 @@ User* loginUser() {
 }
 
 void printMovies() {
-	printf("CatC!logo de Filmes:\n");
+	printf("Catalogo de Filmes:\n");
 	for (int i = 0; i < movieCount; i++) {
-		printf("[%s] %s: R$ %.2f - %s - GC*nero: %s\n", movies[i].id, movies[i].title, movies[i].price, movies[i].description, movies[i].genre);
+		printf("[%s] %s: R$ %.2f - %s - genero: %s\n", movies[i].id, movies[i].title, movies[i].price, movies[i].description, movies[i].genre);
 	}
 }
 
 void addToCart(const char* movieId, int quantity) {
 	if (cartItemCount >= MAX_CART_ITEMS) {
-		printf("Limite mC!ximo de itens no carrinho alcanC'ado.\n");
+		printf("Limite máximo de itens no carrinho alcançado.\n");
 		return;
 	}
 
@@ -140,7 +140,7 @@ void removeFromCart(const char* movieId, int quantity) {
 
 void showCart() {
 	if (cartItemCount == 0) {
-		printf("O carrinho estC! vazio.\n");
+		printf("O carrinho está vazio.\n");
 		return;
 	}
 
@@ -156,12 +156,12 @@ void showCart() {
 			}
 		}
 	}
-	printf("PreC'o Total: R$ %.2f\n", total);
+	printf("preço Total: R$ %.2f\n", total);
 }
 
 void pay() {
 	if (cartItemCount == 0) {
-		printf("NC#o hC! nenhum produto em seu carrinho para ser pago.\n");
+		printf("não ha nenhum produto em seu carrinho para ser pago.\n");
 		return;
 	}
 
@@ -176,7 +176,7 @@ void adminMenu() {
 	char inputUser[50], inputPass[20];
 	int choice;
 
-	printf("Digite o nome de usuC!rio do administrador: ");
+	printf("Digite o nome de usuário do administrador: ");
 	scanf("%s", inputUser);
 	printf("Digite a senha do administrador: ");
 	scanf("%s", inputPass);
@@ -187,7 +187,7 @@ void adminMenu() {
 			printf("1. Adicionar Filme\n");
 			printf("2. Remover Filme\n");
 			printf("3. Sair\n");
-			printf("Escolha uma opC'C#o: ");
+			printf("Escolha uma opção: ");
 			scanf("%d", &choice);
 
 			switch (choice) {
@@ -195,13 +195,13 @@ void adminMenu() {
 				Movie newMovie;
 				printf("Digite o ID do filme: ");
 				scanf("%s", newMovie.id);
-				printf("Digite o tC-tulo do filme: ");
+				printf("Digite o titulo do filme: ");
 				scanf(" %[^\n]s", newMovie.title);
-				printf("Digite o preC'o do filme: ");
+				printf("Digite o preço do filme: ");
 				scanf("%f", &newMovie.price);
-				printf("Digite a descriC'C#o do filme: ");
+				printf("Digite a descrição do filme: ");
 				scanf(" %[^\n]s", newMovie.description);
-				printf("Digite o gC*nero do filme: ");
+				printf("Digite o genero do filme: ");
 				scanf("%s", newMovie.genre);
 
 				// Adicionar o filme em ordem
@@ -239,18 +239,18 @@ void adminMenu() {
 					}
 				}
 				if (!found) {
-					printf("Filme nC#o encontrado.\n");
+					printf("Filme não encontrado.\n");
 				}
 				break;
 			}
 			case 3:
 				return;
 			default:
-				printf("OpC'C#o invC!lida.\n");
+				printf("opção inválida.\n");
 			}
 		}
 	} else {
-		printf("Credenciais invC!lidas.\n");
+		printf("Credenciais inválidas.\n");
 	}
 }
 
@@ -258,14 +258,14 @@ void menu() {
 	int choice;
 	User* loggedUser;
 
-	loadMoviesFromFile();  // Carregar filmes do arquivo
+	loadMoviesFromFile();  
 
 	while (1) {
 		printf("\n1. Registrar\n");
 		printf("2. Login\n");
 		printf("3. Acesso Administrador\n");
 		printf("4. Sair\n");
-		printf("Escolha uma opC'C#o: ");
+		printf("Escolha uma opção: ");
 		scanf("%d", &choice);
 
 		switch (choice) {
@@ -276,13 +276,13 @@ void menu() {
 			loggedUser = loginUser();
 			if (loggedUser != NULL) {
 				while (1) {
-					printf("\n1. Exibir CatC!logo\n");
+					printf("\n1. Exibir Catalogo\n");
 					printf("2. Adicionar ao Carrinho\n");
 					printf("3. Remover do Carrinho\n");
 					printf("4. Mostrar Carrinho\n");
 					printf("5. Pagar\n");
 					printf("6. Sair\n");
-					printf("Escolha uma opC'C#o: ");
+					printf("Escolha uma opção: ");
 					scanf("%d", &choice);
 
 					char movieId[20];
@@ -296,7 +296,7 @@ void menu() {
 						printMovies();
 						printf("Digite o ID do filme: ");
 						scanf("%s", movieId);
-						printf("Quantos dias vocC* deseja alugar o filme? ");
+						printf("Quantos dias você deseja alugar o filme? ");
 						scanf("%d", &quantity);
 						addToCart(movieId, quantity);
 						printf("Filme adicionado ao carrinho para %d dias.\n", quantity);
@@ -304,7 +304,7 @@ void menu() {
 					case 3:
 						printf("Digite o ID do filme: ");
 						scanf("%s", movieId);
-						printf("Quantos dias vocC* deseja remover? ");
+						printf("Quantos dias você deseja remover? ");
 						scanf("%d", &quantity);
 						removeFromCart(movieId, quantity);
 						printf("Filme removido do carrinho.\n");
@@ -316,10 +316,10 @@ void menu() {
 						pay();
 						break;
 					case 6:
-						printf("AtC) logo!\n");
+						printf("Até logo\n");
 						return;
 					default:
-						printf("OpC'C#o invC!lida.\n");
+						printf("Opção inválida.\n");
 					}
 				}
 			}
@@ -328,10 +328,10 @@ void menu() {
 			adminMenu();
 			break;
 		case 4:
-			printf("AtC) logo!\n");
+			printf("Até logo\n");
 			exit(0);
 		default:
-			printf("OpC'C#o invC!lida.\n");
+			printf("Opção inválida.\n");
 		}
 	}
 }
